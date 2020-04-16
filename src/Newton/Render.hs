@@ -3,22 +3,23 @@ module Newton.Render where
 -- this module comes from JuicyPixels package
 import qualified Codec.Picture as Juicy
 import           Data.Complex
-import           Newton        (root)
+import           Newton.Utils  (root)
 
 -- | Render attraction basins for zeros (roots) of a complex function
 -- as a PNG image and save it as a file.
 renderBasins ::
      (Fractional a, RealFloat a)
   => FilePath -- ^ Where to write the image file.
+  -> Int -- ^ Size of the square image in pixels
   -> (Complex a -> Complex a) -- ^ A function f to find zero for.
   -> (Complex a -> Complex a) -- ^ A derivative of function f.
   -> (Complex a -> Juicy.PixelRGB16) -- ^ How to color roots.
   -> IO ()
-renderBasins path f f' color = Juicy.writePng path image
+renderBasins path commonSize f f' color = Juicy.writePng path image
   where
     image = Juicy.generateImage render width height
-    width = 200 -- width in pixels
-    height = 200 -- height in pixels
+    width = commonSize -- width in pixels
+    height = commonSize -- height in pixels
     (xfrom, xto) = (-2, 2) -- range for the real axis
     (yfrom, yto) = (-2, 2) -- range for the imaginary axis
     -- | Convert pixel coordinates to a complex number.

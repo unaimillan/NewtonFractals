@@ -26,7 +26,7 @@ custom-setup:
     - cabal-doctest >=1.0.2 && <1.1
 
 ghc-options:
-  - -Wall
+  - -Wall -fno-warn-type-defaults
 
 dependencies:
   - base >= 4.7 && < 5
@@ -36,7 +36,7 @@ library:
   source-dirs: src
 
 executables:
-  my-project-exe:
+  newton-exe:
     main: Main.hs
     source-dirs: app
     ghc-options:
