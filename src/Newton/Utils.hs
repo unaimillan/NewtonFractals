@@ -30,6 +30,6 @@ root ::
                     -- (where function is zero), if found.
 root maxN accept f f' initial = fmap snd (find (accept . fst) answers)
   where
-    approximations = reverse (scanr ($) initial (replicate maxN (nextX f f')))
+    approximations = take maxN (iterate (nextX f f') initial)
     errors = zipWith approxError (drop 1 approximations) approximations
     answers = zip errors (zip [0 ..] approximations)
