@@ -1,4 +1,5 @@
-# project-template
+# Newton Fractals Rendering
+Additional exercise from Homework 5 of Introduction to Haskell course in IU
 
 [![Build Status](https://travis-ci.org/iu-haskell-spring-2020/project-template.svg?branch=master)](https://travis-ci.org/iu-haskell-spring-2020/project-template)
 
