@@ -21,5 +21,9 @@ cabal.sandbox.config
 cabal.project.local
 stack.yaml.lock
 
+# Pictures
+sample*.png
+sample*.gif
+
 # VS Code
 *.code-workspace

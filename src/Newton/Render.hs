@@ -1,23 +1,50 @@
 module Newton.Render where
 
 -- this module comes from JuicyPixels package
-import qualified Codec.Picture as Juicy
+import qualified Codec.Picture            as J
+import           Codec.Picture.ColorQuant (defaultPaletteOptions)
 import           Data.Complex
-import           Newton.Utils  (root)
+import           Newton.Utils             (root)
+
+-- | Add brightness to an RGB8 Image
+brightnessRGB8 :: Int -> J.Palette -> J.Palette
+brightnessRGB8 add = J.pixelMap brightFunction
+  where
+    up v = fromIntegral (fromIntegral v + add)
+    brightFunction (J.PixelRGB8 r g b) = J.PixelRGB8 (up r) (up g) (up b)
+
+-- | Save an PNG image as a file
+saveBasinsPic ::
+     FilePath -- ^ Where to write the image file.
+  -> J.Palette
+  -> IO ()
+saveBasinsPic = J.writePng
+
+saveBasinsAnim ::
+     FilePath -- ^ Filename of an image
+  -> J.GifDelay -- ^ Delay between frames
+  -> [J.Palette] -- ^ List of pictures to store within the GIF
+  -> IO ()
+saveBasinsAnim path delay images =
+  case J.writeGifImages path J.LoopingForever finalImgs of
+    Left msg  -> error msg
+    Right ans -> ans
+  where
+    palettized = map (J.palettize defaultPaletteOptions) images
+    finalImgs = map (\(img, plt) -> (plt, delay, img)) palettized
 
 -- | Render attraction basins for zeros (roots) of a complex function
--- as a PNG image and save it as a file.
+-- as a PNG image.
 renderBasins ::
      (Fractional a, RealFloat a)
-  => FilePath -- ^ Where to write the image file.
-  -> Int -- ^ Size of the square image in pixels
+  => Int -- ^ Size of the square image in pixels
   -> (Complex a -> Complex a) -- ^ A function f to find zero for.
   -> (Complex a -> Complex a) -- ^ A derivative of function f.
-  -> (Complex a -> Juicy.PixelRGB16) -- ^ How to color roots.
-  -> IO ()
-renderBasins path commonSize f f' color = Juicy.writePng path image
+  -> (Complex a -> J.PixelRGB8) -- ^ How to color roots.
+  -> J.Palette
+renderBasins commonSize f f' color = image
   where
-    image = Juicy.generateImage render width height
+    image = J.generateImage render width height
     width = commonSize -- width in pixels
     height = commonSize -- height in pixels
     (xfrom, xto) = (-2, 2) -- range for the real axis
@@ -38,21 +65,21 @@ renderBasins path commonSize f f' color = Juicy.writePng path image
         n' = fromIntegral n + 1
         k' = fromIntegral k + 1
     -- | Render one pixel.
-    render :: Int -> Int -> Juicy.PixelRGB16
+    render :: Int -> Int -> J.PixelRGB8
     render i j =
       case root n p f f' (pixelToComplex (i, j)) of
-        Nothing -> Juicy.PixelRGB16 0 0 0 -- black
+        Nothing -> J.PixelRGB8 0 0 0 -- black
         Just (k, xr) ->
-          let Juicy.PixelRGB16 r g b = color xr
-           in Juicy.PixelRGB16 (logscale k r) (logscale k g) (logscale k b)
+          let J.PixelRGB8 r g b = color xr
+           in J.PixelRGB8 (logscale k r) (logscale k g) (logscale k b)
 
 -- | Simple (unstructured) complex number coloring.
-simpleColoring :: Complex Double -> Juicy.PixelRGB16
-simpleColoring z = Juicy.PixelRGB16 r g b
+simpleColoring :: Complex Double -> J.PixelRGB8
+simpleColoring z = J.PixelRGB8 r g b
   where
-    r = floor ((2 ^ 16 - 1) * r')
-    g = floor ((2 ^ 16 - 1) * g')
-    b = floor ((2 ^ 16 - 1) * b')
+    r = floor ((2 ^ 8 - 1) * r')
+    g = floor ((2 ^ 8 - 1) * g')
+    b = floor ((2 ^ 8 - 1) * b')
     (r', g', b') = hsl (phase z) 1 (1 - 0.5 ** magnitude z)
 
 -- | Convert HSL color to RGB.
