@@ -1,6 +1,5 @@
-module Main where
+module Main
+  ( main
+  ) where
 
-import           MyProject
-
-main :: IO ()
-main = run
+import           Newton

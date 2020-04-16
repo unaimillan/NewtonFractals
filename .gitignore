@@ -20,3 +20,6 @@ cabal.sandbox.config
 *.eventlog
 cabal.project.local
 stack.yaml.lock
+
+# VS Code
+*.code-workspace
