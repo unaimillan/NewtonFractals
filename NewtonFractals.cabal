@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8773c1f5db5289d43a9e5f31a1393b135553a3adc966b2c96a5c0a583b76ab2b
+-- hash: c41c1c815eadf899742e80e1052c570e3c2dba4eaf8d194eff72525535a8cfde
 
 name:           NewtonFractals
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
   build-depends:
       JuicyPixels
     , base >=4.7 && <5
+    , parallel
   default-language: Haskell2010
 
 executable newton-exe
@@ -54,6 +55,7 @@ executable newton-exe
       JuicyPixels
     , NewtonFractals
     , base >=4.7 && <5
+    , parallel
   default-language: Haskell2010
 
 test-suite doctests
@@ -68,6 +70,7 @@ test-suite doctests
     , QuickCheck
     , base
     , doctest
+    , parallel
     , template-haskell
   default-language: Haskell2010
 
@@ -88,4 +91,5 @@ test-suite spec
     , QuickCheck
     , base >=4.7 && <5
     , hspec
+    , parallel
   default-language: Haskell2010

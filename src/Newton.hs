@@ -1,5 +1,6 @@
 module Newton where
 
+import           Control.Parallel.Strategies (parMap, rdeepseq)
 import           Newton.Render
 
 -- | Newton fractal for z^5 - 1 = 0.
@@ -15,15 +16,16 @@ fractal path =
 
 -- | Newton fractal for z^5 - 1 = 0.
 fractalAnim :: FilePath -> IO ()
-fractalAnim path = saveBasinsAnim path 4 $ pics ++ reverse pics
+fractalAnim path = saveBasinsAnim path 4 pics
   where
-    shifts = take 25 (iterate (+ 1) 0)
+    shifts = take 50 (iterate (+ 1) 0)
     pics =
-      map
+      parMap
+        rdeepseq
         (\dx ->
            renderBasins
-             256
-             (\z -> z ^ 8 + 15 * z ^ 4 - 48 + dx)
+             512
+             (\z -> z ^ 8 + 15 * z ^ 4 - 4 - dx)
              (\z -> 8 * z ^ 7 + 45 * z ^ 3)
              simpleColoring)
         shifts
@@ -35,4 +37,4 @@ solution2 :: IO ()
 solution2 = fractalAnim "sample.gif"
 
 main :: IO ()
-main = solution2
+main = solution1
